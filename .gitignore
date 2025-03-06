@@ -34,3 +34,6 @@ app.dev.yaml
 
 # test rest client
 rest_client.http
+
+#config
+config/*.yaml
