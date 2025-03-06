@@ -2,8 +2,12 @@ package app
 
 import (
 	"github.com/vldcreation/movie-fest/config"
-	"github.com/vldcreation/movie-fest/internal/apis"
-	"github.com/vldcreation/movie-fest/internal/handler"
+	"github.com/vldcreation/movie-fest/internal/apis/admin"
+	"github.com/vldcreation/movie-fest/internal/apis/common"
+	"github.com/vldcreation/movie-fest/internal/apis/user"
+	adminHandler "github.com/vldcreation/movie-fest/internal/handler/admin"
+	commonHandler "github.com/vldcreation/movie-fest/internal/handler/common"
+	userHandler "github.com/vldcreation/movie-fest/internal/handler/user"
 	"github.com/vldcreation/movie-fest/internal/repository"
 	"github.com/vldcreation/movie-fest/pkg/token"
 
@@ -24,19 +28,38 @@ func NewApp(cfg *config.Config) *App {
 func (app *App) Run() {
 	e := echo.New()
 
-	var server apis.ServerInterface = newServer(app.cfg)
-
-	apis.RegisterHandlers(e, server)
-	e.Use(middleware.Logger())
-	e.Logger.Fatal(e.Start(":" + app.cfg.APP.Port))
-}
-
-func newServer(cfg *config.Config) *handler.Server {
-	repo := repository.NewRepository(cfg)
-	pasetoMaker, err := token.NewPasetoMaker(cfg.Token.SecretKey)
+	pasetoMaker, err := token.NewPasetoMaker(app.cfg.Token.SecretKey)
 	if err != nil {
 		panic(err)
 	}
 
-	return handler.NewServer(cfg, repo, handler.WithTokenMaker(pasetoMaker))
+	adminGroup := e.Group("/admin")
+	userGroup := e.Group("/user")
+	commonGroup := e.Group("")
+	adminGroup.Use(AdminMiddleware(pasetoMaker))
+	userGroup.Use(UserMiddleware(pasetoMaker))
+
+	var adminServer admin.ServerInterface = newAdminServer(app.cfg, pasetoMaker)
+	var userServer user.ServerInterface = newUserServer(app.cfg, pasetoMaker)
+	var commonServer common.ServerInterface = newCommonServer(app.cfg, pasetoMaker)
+
+	admin.RegisterHandlers(adminGroup, adminServer)
+	user.RegisterHandlers(userGroup, userServer)
+	common.RegisterHandlers(commonGroup, commonServer)
+	e.Use(middleware.Logger())
+	e.Logger.Fatal(e.Start(":" + app.cfg.APP.Port))
+}
+
+func newAdminServer(cfg *config.Config, pasetoMaker token.Maker) *adminHandler.Server {
+	repo := repository.NewRepository(cfg)
+
+	return adminHandler.NewServer(cfg, repo, adminHandler.WithTokenMaker(pasetoMaker))
+}
+func newUserServer(cfg *config.Config, pasetoMaker token.Maker) *userHandler.Server {
+	repo := repository.NewRepository(cfg)
+	return userHandler.NewServer(cfg, repo, userHandler.WithTokenMaker(pasetoMaker))
+}
+func newCommonServer(cfg *config.Config, pasetoMaker token.Maker) *commonHandler.Server {
+	repo := repository.NewRepository(cfg)
+	return commonHandler.NewServer(cfg, repo, commonHandler.WithTokenMaker(pasetoMaker))
 }

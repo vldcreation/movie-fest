@@ -7,7 +7,7 @@ import (
 
 	"github.com/google/uuid"
 	db "github.com/vldcreation/movie-fest/db/sqlc"
-	"github.com/vldcreation/movie-fest/internal/apis"
+	"github.com/vldcreation/movie-fest/internal/apis/admin"
 	"github.com/vldcreation/movie-fest/pkg/util"
 )
 
@@ -28,13 +28,13 @@ type UpdateMovieTxResult struct {
 }
 
 type Movie interface {
-	CreateMovie(ctx context.Context, arg apis.MovieCreateRequest) (CreateMovieTxResult, error)
-	UpdateMovie(ctx context.Context, id uuid.UUID, arg apis.MovieUpdateRequest) (UpdateMovieTxResult, error)
-	GetMostViewedMovie(ctx context.Context, arg apis.GetAdminMoviesMostViewedParams) ([]db.GetMostViewedMoviesRow, error)
-	GetMostViewedMovieGenre(ctx context.Context, arg apis.GetAdminMoviesMostViewedGenresParams) ([]db.GetMostViewedGenresRow, error)
+	CreateMovie(ctx context.Context, arg admin.MovieCreateRequest) (CreateMovieTxResult, error)
+	UpdateMovie(ctx context.Context, id uuid.UUID, arg admin.MovieUpdateRequest) (UpdateMovieTxResult, error)
+	GetMostViewedMovie(ctx context.Context, arg admin.GetAdminMoviesMostViewedParams) ([]db.GetMostViewedMoviesRow, error)
+	GetMostViewedMovieGenre(ctx context.Context, arg admin.GetAdminMoviesMostViewedGenresParams) ([]db.GetMostViewedGenresRow, error)
 }
 
-func (m *Repository) CreateMovie(ctx context.Context, arg apis.MovieCreateRequest) (CreateMovieTxResult, error) {
+func (m *Repository) CreateMovie(ctx context.Context, arg admin.MovieCreateRequest) (CreateMovieTxResult, error) {
 	var result CreateMovieTxResult
 
 	err := m.execTx(ctx, &sql.TxOptions{
@@ -132,7 +132,7 @@ func (m *Repository) CreateMovie(ctx context.Context, arg apis.MovieCreateReques
 	return result, nil
 }
 
-func (m *Repository) UpdateMovie(ctx context.Context, id uuid.UUID, arg apis.MovieUpdateRequest) (UpdateMovieTxResult, error) {
+func (m *Repository) UpdateMovie(ctx context.Context, id uuid.UUID, arg admin.MovieUpdateRequest) (UpdateMovieTxResult, error) {
 	var result UpdateMovieTxResult
 
 	// check if movie exists
@@ -260,7 +260,7 @@ func (m *Repository) UpdateMovie(ctx context.Context, id uuid.UUID, arg apis.Mov
 	return result, nil
 }
 
-func (m *Repository) GetMostViewedMovie(ctx context.Context, arg apis.GetAdminMoviesMostViewedParams) ([]db.GetMostViewedMoviesRow, error) {
+func (m *Repository) GetMostViewedMovie(ctx context.Context, arg admin.GetAdminMoviesMostViewedParams) ([]db.GetMostViewedMoviesRow, error) {
 	offset := (arg.Page - 1) * arg.Limit
 	movies, err := m.querier.GetMostViewedMovies(ctx, db.GetMostViewedMoviesParams{
 		Limit:  arg.Limit,
@@ -272,7 +272,7 @@ func (m *Repository) GetMostViewedMovie(ctx context.Context, arg apis.GetAdminMo
 	return movies, nil
 }
 
-func (m *Repository) GetMostViewedMovieGenre(ctx context.Context, arg apis.GetAdminMoviesMostViewedGenresParams) ([]db.GetMostViewedGenresRow, error) {
+func (m *Repository) GetMostViewedMovieGenre(ctx context.Context, arg admin.GetAdminMoviesMostViewedGenresParams) ([]db.GetMostViewedGenresRow, error) {
 	offset := (arg.Page - 1) * arg.Limit
 	movies, err := m.querier.GetMostViewedGenres(ctx, db.GetMostViewedGenresParams{
 		Limit:  int32(arg.Limit),

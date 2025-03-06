@@ -6,16 +6,16 @@ import (
 	"errors"
 
 	db "github.com/vldcreation/movie-fest/db/sqlc"
-	"github.com/vldcreation/movie-fest/internal/apis"
+	"github.com/vldcreation/movie-fest/internal/apis/common"
 	"github.com/vldcreation/movie-fest/pkg/util"
 )
 
 type User interface {
-	Registration(ctx context.Context, arg apis.UserRegistration) (db.Users, db.Roles, error)
-	Login(ctx context.Context, arg apis.UserLogin) (db.Users, db.Roles, error)
+	Registration(ctx context.Context, arg common.UserRegistration) (db.Users, db.Roles, error)
+	Login(ctx context.Context, arg common.UserLogin) (db.Users, db.Roles, error)
 }
 
-func (m *Repository) Registration(ctx context.Context, arg apis.UserRegistration) (db.Users, db.Roles, error) {
+func (m *Repository) Registration(ctx context.Context, arg common.UserRegistration) (db.Users, db.Roles, error) {
 	var result db.Users
 	passwordHash, err := util.HashPassword(arg.Password)
 	if err != nil {
@@ -60,7 +60,7 @@ func (m *Repository) Registration(ctx context.Context, arg apis.UserRegistration
 	}, nil
 }
 
-func (m *Repository) Login(ctx context.Context, arg apis.UserLogin) (db.Users, db.Roles, error) {
+func (m *Repository) Login(ctx context.Context, arg common.UserLogin) (db.Users, db.Roles, error) {
 	var result db.Users
 
 	email, err := arg.Email.MarshalJSON()

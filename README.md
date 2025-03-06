@@ -1,5 +1,10 @@
 # Backend Engineering Interview Assignment (Golang) Movie Festival APp
 
+## Disclaimer
+This is a sample project for backend engineering interview.
+If you find these routing isn't best practice, because currently open api doesn't support middleware per endpoint for auto generated endpoint.
+That's why i separate the routing into different file. so each routing can use it's own middleware. see more [issue](https://github.com/oapi-codegen/oapi-codegen/issues/518)
+
 ## Requirements
 
 To run this project you need to have the following installed:

@@ -31,6 +31,7 @@ db/sqlc
 .vscode
 api.dev.yaml
 app.dev.yaml
+internal/handler/admin/endpoints_test.dev.go
 
 # test rest client
 rest_client.http

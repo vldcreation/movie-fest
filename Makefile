@@ -31,10 +31,12 @@ test_api:
 
 generate: generated generate_mocks
 
-generated: api.yml
+generated: common.api.yaml admin.api.yaml user.api.yaml
 	@echo "Generating files..."
-	mkdir internal/apis || true
-	oapi-codegen -config cfg.yaml --package apis -generate types,server,spec $< > internal/apis/api.gen.go
+	mkdir -p internal/apis/admin internal/apis/common internal/apis/user
+	oapi-codegen -config cfg.yaml --package admin -generate types,server,spec admin.api.yaml > internal/apis/admin/api.gen.go
+	oapi-codegen -config cfg.yaml --package common -generate types,server,spec common.api.yaml > internal/apis/common/api.gen.go
+	oapi-codegen -config cfg.yaml --package user -generate types,server,spec user.api.yaml > internal/apis/user/api.gen.go
 
 INTERFACES_GO_FILES := $(shell find internal/repository -name "interfaces.go")
 INTERFACES_GEN_GO_FILES := $(INTERFACES_GO_FILES:%.go=%.mock.gen.go)

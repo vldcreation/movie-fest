@@ -6,7 +6,7 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/vldcreation/movie-fest/config"
-	"github.com/vldcreation/movie-fest/internal/apis"
+	"github.com/vldcreation/movie-fest/internal/apis/admin"
 	"github.com/vldcreation/movie-fest/internal/repository"
 )
 
@@ -22,8 +22,8 @@ func NewMovie(cfg *config.Config, repo repository.RepositoryInterface) *Movie {
 	}
 }
 
-func (m *Movie) CreateMovie(ctx context.Context, param apis.MovieCreateRequest) (*apis.MovieResponse, error) {
-	var res apis.MovieResponse
+func (m *Movie) CreateMovie(ctx context.Context, param admin.MovieCreateRequest) (*admin.MovieResponse, error) {
+	var res admin.MovieResponse
 	result, err := m.repo.CreateMovie(ctx, param)
 	if err != nil {
 		return nil, err
@@ -59,8 +59,8 @@ func (m *Movie) CreateMovie(ctx context.Context, param apis.MovieCreateRequest) 
 
 }
 
-func (m *Movie) UpdateMovie(ctx context.Context, id uuid.UUID, param apis.MovieUpdateRequest) (*apis.MovieResponse, error) {
-	var res apis.MovieResponse
+func (m *Movie) UpdateMovie(ctx context.Context, id uuid.UUID, param admin.MovieUpdateRequest) (*admin.MovieResponse, error) {
+	var res admin.MovieResponse
 	result, err := m.repo.UpdateMovie(ctx, id, param)
 	if err != nil {
 		return nil, err
@@ -95,21 +95,21 @@ func (m *Movie) UpdateMovie(ctx context.Context, id uuid.UUID, param apis.MovieU
 	return &res, nil
 }
 
-func (m *Movie) GetAdminMoviesMostViewed(ctx context.Context, params apis.GetAdminMoviesMostViewedParams) (*apis.PaginatedMovieViewsResponse, error) {
+func (m *Movie) GetAdminMoviesMostViewed(ctx context.Context, params admin.GetAdminMoviesMostViewedParams) (*admin.PaginatedMovieViewsResponse, error) {
 	movies, err := m.repo.GetMostViewedMovie(ctx, params)
 	if err != nil {
 		return nil, err
 	}
 
-	response := &apis.PaginatedMovieViewsResponse{
+	response := &admin.PaginatedMovieViewsResponse{
 		Page:  int(params.Page),
 		Limit: int(params.Limit),
-		Data:  make([]apis.MovieViewsResponse, 0),
+		Data:  make([]admin.MovieViewsResponse, 0),
 	}
 
 	for _, movie := range movies {
-		movieResp := apis.MovieViewsResponse{
-			Movie: apis.MovieResponse{
+		movieResp := admin.MovieViewsResponse{
+			Movie: admin.MovieResponse{
 				Id:          movie.ID.String(),
 				Title:       movie.Title,
 				Description: movie.Description.String,
@@ -129,20 +129,20 @@ func (m *Movie) GetAdminMoviesMostViewed(ctx context.Context, params apis.GetAdm
 	return response, nil
 }
 
-func (m *Movie) GetAdminMoviesMostViewedGenre(ctx context.Context, params apis.GetAdminMoviesMostViewedGenresParams) (*apis.PaginatedGenreViewResponse, error) {
+func (m *Movie) GetAdminMoviesMostViewedGenre(ctx context.Context, params admin.GetAdminMoviesMostViewedGenresParams) (*admin.PaginatedGenreViewResponse, error) {
 	genres, err := m.repo.GetMostViewedMovieGenre(ctx, params)
 	if err != nil {
 		return nil, err
 	}
 
-	response := &apis.PaginatedGenreViewResponse{
+	response := &admin.PaginatedGenreViewResponse{
 		Page:  int(params.Page),
 		Limit: int(params.Limit),
-		Data:  make([]apis.GenreViewsResponse, 0),
+		Data:  make([]admin.GenreViewsResponse, 0),
 	}
 
 	for _, genre := range genres {
-		genreResp := apis.GenreViewsResponse{
+		genreResp := admin.GenreViewsResponse{
 			Genre: genre.Name,
 			Views: genre.ViewCount,
 		}
