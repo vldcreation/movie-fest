@@ -17,7 +17,7 @@ func TestPasetoMaker(t *testing.T) {
 	username := "vld"
 	duration := 1 * time.Minute
 
-	token, err := maker.CreateToken(username, duration)
+	token, err := maker.CreateToken(username, duration, map[string]any{"foo": "bar"})
 	require.NoError(t, err)
 
 	require.NotEmpty(t, token)
@@ -28,6 +28,10 @@ func TestPasetoMaker(t *testing.T) {
 	require.NotEmpty(t, payload.ID)
 	require.Equal(t, username, payload.Username)
 	require.WithinDuration(t, payload.IssuedAt, time.Now(), 5*time.Second)
+
+	bar, ok := payload.GetCustomClaims("foo")
+	require.True(t, ok)
+	require.Equal(t, "bar", bar)
 }
 
 func TestExpiredTokenPaseto(t *testing.T) {
@@ -37,7 +41,7 @@ func TestExpiredTokenPaseto(t *testing.T) {
 	username := "vld"
 	duration := -time.Minute
 
-	token, err := maker.CreateToken(username, duration)
+	token, err := maker.CreateToken(username, duration, nil)
 	require.NoError(t, err)
 
 	payload, err := maker.VerifyToken(token)

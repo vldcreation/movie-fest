@@ -24,8 +24,8 @@ func NewPasetoMaker(secretKey string) (Maker, error) {
 	}, nil
 }
 
-func (maker *PasetoMaker) CreateToken(username string, duration time.Duration) (string, error) {
-	payload, err := NewPayload(username, duration)
+func (maker *PasetoMaker) CreateToken(username string, duration time.Duration, metadata map[string]any) (string, error) {
+	payload, err := NewPayloadWithOpts(username, duration, WithCustomClaims(CustomClaims{Data: metadata}))
 	if err != nil {
 		return "", err
 	}

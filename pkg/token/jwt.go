@@ -21,8 +21,8 @@ func NewJWTMaker(secretKey string) (Maker, error) {
 }
 
 // CreateToken creates a new token with the specified username and duration.
-func (maker *JWTMaker) CreateToken(username string, duration time.Duration) (string, error) {
-	payload, err := NewPayload(username, duration)
+func (maker *JWTMaker) CreateToken(username string, duration time.Duration, metadata map[string]any) (string, error) {
+	payload, err := NewPayloadWithOpts(username, duration, WithCustomClaims(CustomClaims{Data: metadata}))
 	if err != nil {
 		return "", err
 	}
