@@ -1,0 +1,41 @@
+@BASE_URL=http://localhost:8000
+
+GET {{BASE_URL}}/health
+
+### /admin/movies
+POST {{BASE_URL}}/movies
+Content-Type: application/json
+
+{
+    "title": "The",
+    "description": "The aging patriarch of an organized crime dynasty transfers control of his clandestine empire to his reluctant son.",
+    "duration": 175,
+    "watch_url": "URL_ADDRESS.youtube.com/watch?3zA",
+    "genres": [
+        "Crime",
+        "Drama"
+    ],
+    "artists": [
+        "Marlon Brando",
+        "Al Pacino"
+    ]
+}
+
+### /admin/movies/{id}
+PUT {{BASE_URL}}/movies/f23e3a1b-0d47-44c3-9f8f-341f74289b7f
+Content-Type: application/json
+
+{
+    "title": "The Update Movies",
+    "description": "The aging patriarch of an organized crime dynasty transfers control of his clandestine empire to his reluctant son.",
+    "duration": 175,
+    "watch_url": "URL_ADDRESS.youtube.com/watch?3zA",
+    "genres": [
+        "Crime",
+        "Drama"
+    ],
+    "artists": [
+        "Marlon Brando",
+        "Al Pacino"
+    ]
+}
