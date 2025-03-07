@@ -7,6 +7,8 @@ That's why i separate the routing into different file. so each routing can use i
 
 It's still not as clean as i want, but we achieve fully testable, automatically generated API, automatically generate querier so it's safe to use CQRS pattern and easy to maintain if so.
 
+All these endpoint is untested propperly due to timeline conflicts
+
 ## Requirements
 
 To run this project you need to have the following installed:
