@@ -8,6 +8,7 @@ import (
 	goval "github.com/go-playground/validator/v10"
 	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
+	"github.com/vldcreation/movie-fest/consts"
 	"github.com/vldcreation/movie-fest/internal/apis/admin"
 	"github.com/vldcreation/movie-fest/internal/usecase"
 )
@@ -26,7 +27,8 @@ func (s *Server) GetHealth(ctx echo.Context) error {
 
 // (POST /movies)
 func (s *Server) PostAdminMovies(ctx echo.Context) error {
-	newCtx, cancel := context.WithTimeout(ctx.Request().Context(), 30*time.Second)
+	newCtx := context.WithValue(ctx.Request().Context(), consts.AuthKey, ctx.Get(consts.AuthKey))
+	newCtx, cancel := context.WithTimeout(newCtx, 30*time.Second)
 	defer cancel()
 
 	// Parse request body
@@ -52,7 +54,8 @@ func (s *Server) PostAdminMovies(ctx echo.Context) error {
 
 // (PUT /movies/:id)
 func (s *Server) PutAdminMoviesId(ctx echo.Context, id string) error {
-	newCtx, cancel := context.WithTimeout(ctx.Request().Context(), 30*time.Second)
+	newCtx := context.WithValue(ctx.Request().Context(), consts.AuthKey, ctx.Get(consts.AuthKey))
+	newCtx, cancel := context.WithTimeout(newCtx, 30*time.Second)
 	defer cancel()
 
 	// Parse id
@@ -86,7 +89,8 @@ func (s *Server) PutAdminMoviesId(ctx echo.Context, id string) error {
 
 // (GET /movies/most-viewed)
 func (s *Server) GetAdminMoviesMostViewed(ctx echo.Context, params admin.GetAdminMoviesMostViewedParams) error {
-	newCtx, cancel := context.WithTimeout(ctx.Request().Context(), 30*time.Second)
+	newCtx := context.WithValue(ctx.Request().Context(), consts.AuthKey, ctx.Get(consts.AuthKey))
+	newCtx, cancel := context.WithTimeout(newCtx, 30*time.Second)
 	defer cancel()
 	// Parse request query
 	if err := ctx.Bind(&params); err != nil {
@@ -110,7 +114,8 @@ func (s *Server) GetAdminMoviesMostViewed(ctx echo.Context, params admin.GetAdmi
 
 // (GET /movies/most-viewed/genre)
 func (s *Server) GetAdminMoviesMostViewedGenres(ctx echo.Context, params admin.GetAdminMoviesMostViewedGenresParams) error {
-	newCtx, cancel := context.WithTimeout(ctx.Request().Context(), 30*time.Second)
+	newCtx := context.WithValue(ctx.Request().Context(), consts.AuthKey, ctx.Get(consts.AuthKey))
+	newCtx, cancel := context.WithTimeout(newCtx, 30*time.Second)
 	defer cancel()
 
 	// Parse request query

@@ -33,7 +33,7 @@ func (u *User) VoteMovie(ctx context.Context, id uuid.UUID) error {
 
 	userId, ok := user.GetCustomClaims("user_id")
 	if !ok {
-		return errors.New("user not found")
+		return errors.New("userIds not found")
 	}
 
 	parseUserId, err := uuid.Parse(userId.(string))

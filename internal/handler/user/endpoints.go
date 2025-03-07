@@ -7,7 +7,9 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
+	"github.com/vldcreation/movie-fest/consts"
 	"github.com/vldcreation/movie-fest/internal/usecase"
+	"github.com/vldcreation/movie-fest/pkg/errorx"
 )
 
 // This is just a test endpoint to get you started. Please delete this endpoint.
@@ -23,17 +25,18 @@ func (s *Server) GetHealth(ctx echo.Context) error {
 }
 
 func (s *Server) PostMoviesIdVote(ctx echo.Context, id string) error {
-	newCtx, cancel := context.WithTimeout(ctx.Request().Context(), 30*time.Second)
+	newCtx := context.WithValue(ctx.Request().Context(), consts.AuthKey, ctx.Get(consts.AuthKey))
+	newCtx, cancel := context.WithTimeout(newCtx, 30*time.Second)
 	defer cancel()
 
 	parseID, err := uuid.Parse(id)
 	if err != nil {
-		return ctx.JSON(http.StatusBadRequest, err.Error())
+		return ctx.JSON(http.StatusBadRequest, errorx.NewApiError(http.StatusBadRequest, errorx.WithMessage("invalid id format")))
 	}
 
 	err = usecase.NewVote(s.cfg, s.tokenMaker, s.repo).VoteMovie(newCtx, parseID)
 	if err != nil {
-		return ctx.JSON(http.StatusBadRequest, err.Error())
+		return ctx.JSON(http.StatusBadRequest, errorx.NewApiError(http.StatusBadRequest, errorx.WithMessage(err.Error())))
 	}
 
 	return ctx.JSON(http.StatusOK, nil)
