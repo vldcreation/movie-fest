@@ -29,7 +29,7 @@ test_api:
 	go clean -testcache
 	go test ./tests/...
 
-generate: generated generate_mocks
+generate: generated generate_mocks migrateup sqlc
 
 generated: common.api.yaml admin.api.yaml user.api.yaml
 	@echo "Generating files..."
