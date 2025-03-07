@@ -52,11 +52,14 @@ To run this project you need to have the following installed:
 
 ## Initiate The Project
 
-To start working, execute
+1. To start working, execute
 
 ```
 make init
 ```
+
+2. cp config/config.yaml.example config/config.yaml
+
 
 ## Running
 
@@ -88,4 +91,8 @@ To run test, run the following command:
 
 ```
 make test
+```
+
+```
+cp rest_client.http.example rest_client.http
 ```

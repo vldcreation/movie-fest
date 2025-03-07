@@ -1,10 +1,18 @@
 @BASE_URL=http://localhost:8000
+@Token = ""
 
 GET {{BASE_URL}}/health
 
-### /admin/movies
-POST {{BASE_URL}}/movies
+###
+# @name GetMovies
+GET {{BASE_URL}}/movies?page=1&limit=10&search=
+Authorization: Bearer {{Token}}
+
+
+###
+POST {{BASE_URL}}/admin/movies
 Content-Type: application/json
+Authorization: Bearer {{Token}}
 
 {
     "title": "The",
@@ -21,8 +29,8 @@ Content-Type: application/json
     ]
 }
 
-### /admin/movies/{id}
-PUT {{BASE_URL}}/movies/f23e3a1b-0d47-44c3-9f8f-341f74289b7f
+###
+PUT {{BASE_URL}}/admin/movies/f23e3a1b-0d47-44c3-9f8f-341f74289b7f
 Content-Type: application/json
 
 {
@@ -39,3 +47,35 @@ Content-Type: application/json
         "Al Pacino"
     ]
 }
+
+###
+# @name VoteMovie
+POST {{BASE_URL}}/movies/0f14a2db-fdde-4662-b763-41b7218826dd/vote
+Authorization: Bearer {{Token}}
+
+### Get Most View Movies
+GET {{BASE_URL}}/admin/movies/most-viewed?page=1&limit=10
+Authorization: Bearer {{Token}}
+
+### Get Most View Genres
+GET {{BASE_URL}}/admin/movies/most-viewed/genres?page=1&limit=10
+
+### POST Auth Register
+POST {{BASE_URL}}/auth/register
+Content-Type: application/json
+
+{
+    "email": "user@example.com",
+    "username": "user1",
+    "password": "secret@123"
+}
+###
+# @name loginApi
+POST {{BASE_URL}}/auth/login
+Content-Type: application/json
+
+{
+    "email": "admin@example.com",
+    "password": "admin@123"
+}
+@Token = {{loginApi.response.body.token}}

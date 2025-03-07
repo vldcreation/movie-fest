@@ -1,0 +1,16 @@
+app:
+  name: "Movie Fest"
+  port: "8000"
+  env: "dev"
+db:
+  driver: postgres
+  host: "localhost"
+  port: "5432"
+  user: "postgres"
+  password: "secret"
+  database: "movie_fest"
+  sslmode: "disable"
+token:
+  generator: "paseto"
+  secret_key: "d5g4qV(vvYD@v#&5`W1PTcX7~g4_\"C53"
+  access_token_duration: "10s"
