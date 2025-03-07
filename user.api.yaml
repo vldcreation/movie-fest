@@ -20,6 +20,22 @@ servers:
     description: Development server
 
 paths:
+  /movies/{id}/vote:
+    post:
+      tags: [Movies]
+      summary: Vote for a movie
+      security:
+        - bearerAuth: ["user"]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: ulid
+      responses:
+        '200':
+          description: Movie voted
 components:
   schemas:
     ErrorResponse:

@@ -59,12 +59,13 @@ func (u *User) Login(ctx context.Context, arg common.UserLogin) (common.LoginRes
 		return res, err
 	}
 
-	metdata := map[string]any{
+	metadata := map[string]any{
 		"role_id": role.ID,
 		"role":    role.Name,
+		"user_id": user.ID,
 	}
 
-	accessToken, err := u.tokenMaker.CreateToken(user.Username, u.cfg.Token.AccessTokenDuration, metdata)
+	accessToken, err := u.tokenMaker.CreateToken(user.Username, u.cfg.Token.AccessTokenDuration, metadata)
 	if err != nil {
 		return res, err
 	}

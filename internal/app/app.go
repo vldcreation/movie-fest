@@ -33,8 +33,8 @@ func (app *App) Run() {
 		panic(err)
 	}
 
-	adminGroup := e.Group("/admin")
-	userGroup := e.Group("/user")
+	adminGroup := e.Group("")
+	userGroup := e.Group("")
 	commonGroup := e.Group("")
 	adminGroup.Use(AdminMiddleware(pasetoMaker))
 	userGroup.Use(UserMiddleware(pasetoMaker))

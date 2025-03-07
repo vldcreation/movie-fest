@@ -14,6 +14,7 @@ import (
 type RepositoryInterface interface {
 	Movie
 	User
+	Vote
 }
 
 type Repository struct {
