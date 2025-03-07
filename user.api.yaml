@@ -20,6 +20,39 @@ servers:
     description: Development server
 
 paths:
+  /movies:
+    get:
+      tags: [Movies]
+      summary: Get all movies
+      parameters:
+        - name: page
+          in: query
+          required: true
+          schema:
+            type: integer
+            format: int32
+            default: 1
+        - name: limit
+          in: query
+          required: true
+          schema:
+            type: integer
+            format: int32
+            default: 10
+        - name: search
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PaginatedMoviesResponse"
+        '400':
+          $ref: "#/components/responses/BadRequest"
   /movies/{id}/vote:
     post:
       tags: [Movies]

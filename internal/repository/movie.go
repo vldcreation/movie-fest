@@ -8,6 +8,7 @@ import (
 	"github.com/google/uuid"
 	db "github.com/vldcreation/movie-fest/db/sqlc"
 	"github.com/vldcreation/movie-fest/internal/apis/admin"
+	"github.com/vldcreation/movie-fest/internal/apis/user"
 	"github.com/vldcreation/movie-fest/pkg/util"
 )
 
@@ -32,6 +33,7 @@ type Movie interface {
 	UpdateMovie(ctx context.Context, id uuid.UUID, arg admin.MovieUpdateRequest) (UpdateMovieTxResult, error)
 	GetMostViewedMovie(ctx context.Context, arg admin.GetAdminMoviesMostViewedParams) ([]db.GetMostViewedMoviesRow, error)
 	GetMostViewedMovieGenre(ctx context.Context, arg admin.GetAdminMoviesMostViewedGenresParams) ([]db.GetMostViewedGenresRow, error)
+	GetMovies(ctx context.Context, arg user.GetMoviesParams) ([]db.GetMoviesRow, error)
 }
 
 func (m *Repository) CreateMovie(ctx context.Context, arg admin.MovieCreateRequest) (CreateMovieTxResult, error) {
@@ -277,6 +279,22 @@ func (m *Repository) GetMostViewedMovieGenre(ctx context.Context, arg admin.GetA
 	movies, err := m.querier.GetMostViewedGenres(ctx, db.GetMostViewedGenresParams{
 		Limit:  int32(arg.Limit),
 		Offset: int32(offset),
+	})
+	if err != nil {
+		return nil, err
+	}
+	return movies, nil
+}
+
+func (m *Repository) GetMovies(ctx context.Context, arg user.GetMoviesParams) ([]db.GetMoviesRow, error) {
+	offset := (arg.Page - 1) * arg.Limit
+	movies, err := m.querier.GetMovies(ctx, db.GetMoviesParams{
+		Limit:   arg.Limit,
+		Offset:  offset,
+		Column1: arg.Search,
+		Column2: arg.Search,
+		Column3: arg.Search,
+		Column4: arg.Search,
 	})
 	if err != nil {
 		return nil, err

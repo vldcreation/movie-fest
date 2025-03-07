@@ -8,6 +8,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
 	"github.com/vldcreation/movie-fest/consts"
+	"github.com/vldcreation/movie-fest/internal/apis/user"
 	"github.com/vldcreation/movie-fest/internal/usecase"
 	"github.com/vldcreation/movie-fest/pkg/responsex"
 )
@@ -40,4 +41,17 @@ func (s *Server) PostMoviesIdVote(ctx echo.Context, id string) error {
 	}
 
 	return ctx.JSON(http.StatusOK, responsex.NewApiSuccess(http.StatusOK, responsex.WithSuccessMessage("success")))
+}
+
+func (s *Server) GetMovies(ctx echo.Context, params user.GetMoviesParams) error {
+	newCtx := context.WithValue(ctx.Request().Context(), consts.AuthKey, ctx.Get(consts.AuthKey))
+	newCtx, cancel := context.WithTimeout(newCtx, 30*time.Second)
+	defer cancel()
+
+	movies, err := usecase.NewMovie(s.cfg, s.repo).GetMovies(newCtx, params)
+	if err != nil {
+		return ctx.JSON(http.StatusBadRequest, responsex.NewApiError(http.StatusBadRequest, responsex.WithErrorMessage(err.Error())))
+	}
+
+	return ctx.JSON(http.StatusOK, responsex.NewApiSuccess(http.StatusOK, responsex.WithSuccessMessage("success")).WithData(movies))
 }

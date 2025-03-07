@@ -6,6 +6,7 @@ import (
 
 	"github.com/vldcreation/movie-fest/config"
 	"github.com/vldcreation/movie-fest/internal/apis/common"
+	"github.com/vldcreation/movie-fest/internal/apis/user"
 	"github.com/vldcreation/movie-fest/internal/repository"
 	"github.com/vldcreation/movie-fest/pkg/token"
 )
@@ -75,4 +76,31 @@ func (u *User) Login(ctx context.Context, arg common.UserLogin) (common.LoginRes
 	}
 
 	return res, nil
+}
+
+func (m *Movie) GetMovies(ctx context.Context, params user.GetMoviesParams) (*user.PaginatedMoviesResponse, error) {
+	movies, err := m.repo.GetMovies(ctx, params)
+	if err != nil {
+		return nil, err
+	}
+	response := &user.PaginatedMoviesResponse{
+		Page:  int(params.Page),
+		Limit: int(params.Limit),
+		Data:  make([]user.MovieResponse, 0),
+	}
+	for _, movie := range movies {
+		movieResp := user.MovieResponse{
+			Id:          movie.ID.String(),
+			Title:       movie.Title,
+			Description: movie.Description.String,
+			Duration:    int(movie.Duration),
+			WatchUrl:    movie.WatchUrl,
+			CreatedAt:   &movie.CreatedAt.Time,
+			UpdatedAt:   &movie.UpdatedAt.Time,
+		}
+		response.Data = append(response.Data, movieResp)
+	}
+	response.Total = len(movies)
+	response.TotalPages = (response.Total + int(params.Limit) - 1) / int(params.Limit)
+	return response, nil
 }

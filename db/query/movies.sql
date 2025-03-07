@@ -1,9 +1,9 @@
 -- name: GetMovies :many
-SELECT m.*, 
-       array_agg(DISTINCT g.name) AS genres,
-       array_agg(DISTINCT a.name) AS artists,
-       COUNT(DISTINCT v.id) AS view_count,
-       COUNT(DISTINCT vt.user_id) AS vote_count
+SELECT m.id, m.title, m.description, m.duration, m.watch_url, m.created_at, m.updated_at,
+       COALESCE(array_agg(DISTINCT g.name) FILTER (WHERE g.name IS NOT NULL), '{}') AS genres,
+       COALESCE(array_agg(DISTINCT a.name) FILTER (WHERE a.name IS NOT NULL), '{}') AS artists,
+       COUNT(v.id) AS view_count,
+       COUNT(vt.user_id) AS vote_count
 FROM movies m
 LEFT JOIN movie_genres mg ON m.id = mg.movie_id
 LEFT JOIN genres g ON mg.genre_id = g.id
