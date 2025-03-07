@@ -1,4 +1,4 @@
-package app
+package errorx
 
 import "net/http"
 

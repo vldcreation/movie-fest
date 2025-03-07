@@ -2,6 +2,7 @@ package user
 
 import (
 	"context"
+	"log"
 	"net/http"
 	"time"
 
@@ -27,13 +28,16 @@ func (s *Server) PostMoviesIdVote(ctx echo.Context, id string) error {
 	defer cancel()
 
 	parseID, err := uuid.Parse(id)
+	log.Println("id", id)
+	log.Println("err", err)
 	if err != nil {
-		return ctx.JSON(http.StatusBadRequest, err)
+		return ctx.JSON(http.StatusBadRequest, err.Error())
 	}
 
 	err = usecase.NewVote(s.cfg, s.tokenMaker, s.repo).VoteMovie(newCtx, parseID)
 	if err != nil {
-		return ctx.JSON(http.StatusBadRequest, err)
+		log.Println("err", err)
+		return ctx.JSON(http.StatusBadRequest, err.Error())
 	}
 
 	return ctx.JSON(http.StatusOK, nil)
