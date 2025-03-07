@@ -3,6 +3,7 @@ package repository
 import (
 	"context"
 	"database/sql"
+	"encoding/json"
 	"errors"
 
 	db "github.com/vldcreation/movie-fest/db/sqlc"
@@ -26,13 +27,18 @@ func (m *Repository) Registration(ctx context.Context, arg common.UserRegistrati
 	if err != nil {
 		return result, db.Roles{}, err
 	}
+	var emailString string
+	err = json.Unmarshal(email, &emailString)
+	if err != nil {
+		return result, db.Roles{}, err
+	}
 
 	err = m.execTx(ctx, &sql.TxOptions{
 		Isolation: sql.LevelRepeatableRead,
 	}, func(tx *db.Queries) error {
 		user, err := tx.CreateUser(ctx, db.CreateUserParams{
 			Username:     arg.Username,
-			Email:        string(email),
+			Email:        emailString,
 			PasswordHash: passwordHash,
 		})
 		if err != nil {
@@ -67,8 +73,13 @@ func (m *Repository) Login(ctx context.Context, arg common.UserLogin) (db.Users,
 	if err != nil {
 		return result, db.Roles{}, err
 	}
+	var emailString string
+	err = json.Unmarshal(email, &emailString)
+	if err != nil {
+		return result, db.Roles{}, err
+	}
 
-	user, err := m.querier.GetUserByEmail(ctx, string(email))
+	user, err := m.querier.GetUserByEmail(ctx, emailString)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return result, db.Roles{}, errors.New("user not found")
