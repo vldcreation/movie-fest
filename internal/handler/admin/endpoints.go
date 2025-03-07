@@ -2,7 +2,6 @@ package admin
 
 import (
 	"context"
-	"log"
 	"net/http"
 	"time"
 
@@ -114,8 +113,6 @@ func (s *Server) GetAdminMoviesMostViewedGenres(ctx echo.Context, params admin.G
 	newCtx, cancel := context.WithTimeout(ctx.Request().Context(), 30*time.Second)
 	defer cancel()
 
-	scopes, _ := ctx.Get(admin.BearerAuthScopes).([]string)
-	log.Printf("scopes: %v", scopes)
 	// Parse request query
 	if err := ctx.Bind(&params); err != nil {
 		return ctx.JSON(http.StatusBadRequest, admin.ErrorResponse{Message: err.Error()})

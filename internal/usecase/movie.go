@@ -29,7 +29,6 @@ func (m *Movie) CreateMovie(ctx context.Context, param admin.MovieCreateRequest)
 		return nil, err
 	}
 
-	log.Printf("result: %+v\n", result)
 	if result.Movie.ID != uuid.Nil {
 		res.Id = result.Movie.ID.String()
 		res.Title = result.Movie.Title
