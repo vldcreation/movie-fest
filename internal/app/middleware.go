@@ -5,13 +5,8 @@ import (
 	"strings"
 
 	"github.com/labstack/echo/v4"
+	"github.com/vldcreation/movie-fest/consts"
 	"github.com/vldcreation/movie-fest/pkg/token"
-)
-
-const (
-	AuthHeader   = "Authorization"
-	BearerSchema = "Bearer"
-	AuthKey      = "auth_payload"
 )
 
 var (
@@ -21,7 +16,7 @@ var (
 func AdminMiddleware(token token.Maker) echo.MiddlewareFunc {
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(ctx echo.Context) error {
-			authorizationHeader := ctx.Request().Header.Get(AuthHeader)
+			authorizationHeader := ctx.Request().Header.Get(consts.AuthHeader)
 			if len(authorizationHeader) == 0 {
 				err := ErrUnauthorized.WithMessage("authorization header is not provided")
 				ctx.JSON(http.StatusUnauthorized, err)
@@ -36,7 +31,7 @@ func AdminMiddleware(token token.Maker) echo.MiddlewareFunc {
 			}
 
 			schema := fields[0]
-			if schema != BearerSchema {
+			if schema != consts.BearerSchema {
 				err := ErrUnauthorized.WithMessage("unsupported authorization schema")
 				ctx.JSON(http.StatusUnauthorized, err)
 				return err
@@ -56,7 +51,7 @@ func AdminMiddleware(token token.Maker) echo.MiddlewareFunc {
 				return err
 			}
 
-			ctx.Set(AuthKey, payload)
+			ctx.Set(consts.AuthKey, payload)
 			return next(ctx)
 		}
 	}
@@ -65,7 +60,7 @@ func AdminMiddleware(token token.Maker) echo.MiddlewareFunc {
 func UserMiddleware(token token.Maker) echo.MiddlewareFunc {
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(ctx echo.Context) error {
-			authorizationHeader := ctx.Request().Header.Get(AuthHeader)
+			authorizationHeader := ctx.Request().Header.Get(consts.AuthHeader)
 			if len(authorizationHeader) == 0 {
 				err := ErrUnauthorized.WithMessage("authorization header is not provided")
 				ctx.JSON(http.StatusUnauthorized, err)
@@ -80,7 +75,7 @@ func UserMiddleware(token token.Maker) echo.MiddlewareFunc {
 			}
 
 			schema := fields[0]
-			if schema != BearerSchema {
+			if schema != consts.BearerSchema {
 				err := ErrUnauthorized.WithMessage("unsupported authorization schema")
 				ctx.JSON(http.StatusUnauthorized, err)
 				return err
@@ -100,7 +95,7 @@ func UserMiddleware(token token.Maker) echo.MiddlewareFunc {
 				return err
 			}
 
-			ctx.Set(AuthKey, payload)
+			ctx.Set(consts.AuthKey, payload)
 			return next(ctx)
 		}
 	}
