@@ -117,7 +117,7 @@ func mustAuthenticatedUser(authPayload token.Payload) error {
 	if !ok {
 		return ErrUnauthorized.WithMessage("role not found")
 	}
-	if role != "admin" || role != "user" {
+	if role != "admin" && role != "user" {
 		return ErrUnauthorized.WithMessage("unauthorized")
 	}
 	return nil
