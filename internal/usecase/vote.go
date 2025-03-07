@@ -41,5 +41,5 @@ func (u *User) VoteMovie(ctx context.Context, id uuid.UUID) error {
 		return err
 	}
 
-	return u.repo.VoteMovie(ctx, id, parseUserId)
+	return u.repo.VoteMovie(ctx, parseUserId, id)
 }

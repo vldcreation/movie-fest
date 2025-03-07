@@ -6,12 +6,12 @@ import (
 
 	"github.com/labstack/echo/v4"
 	"github.com/vldcreation/movie-fest/consts"
-	"github.com/vldcreation/movie-fest/pkg/errorx"
+	"github.com/vldcreation/movie-fest/pkg/responsex"
 	"github.com/vldcreation/movie-fest/pkg/token"
 )
 
 var (
-	ErrUnauthorized = errorx.NewApiError(http.StatusUnauthorized)
+	ErrUnauthorized = responsex.NewApiError(http.StatusUnauthorized)
 )
 
 func AdminMiddleware(token token.Maker) echo.MiddlewareFunc {

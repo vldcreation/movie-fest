@@ -1,4 +1,4 @@
-package errorx
+package responsex
 
 import "net/http"
 
@@ -9,7 +9,7 @@ type ApiError struct {
 
 type ErrorOpt func(*ApiError)
 
-func WithMessage(msg string) ErrorOpt {
+func WithErrorMessage(msg string) ErrorOpt {
 	return func(e *ApiError) {
 		e.Message = msg
 	}

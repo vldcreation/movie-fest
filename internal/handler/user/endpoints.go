@@ -9,7 +9,7 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/vldcreation/movie-fest/consts"
 	"github.com/vldcreation/movie-fest/internal/usecase"
-	"github.com/vldcreation/movie-fest/pkg/errorx"
+	"github.com/vldcreation/movie-fest/pkg/responsex"
 )
 
 // This is just a test endpoint to get you started. Please delete this endpoint.
@@ -31,13 +31,13 @@ func (s *Server) PostMoviesIdVote(ctx echo.Context, id string) error {
 
 	parseID, err := uuid.Parse(id)
 	if err != nil {
-		return ctx.JSON(http.StatusBadRequest, errorx.NewApiError(http.StatusBadRequest, errorx.WithMessage("invalid id format")))
+		return ctx.JSON(http.StatusBadRequest, responsex.NewApiError(http.StatusBadRequest, responsex.WithErrorMessage("invalid id format")))
 	}
 
 	err = usecase.NewVote(s.cfg, s.tokenMaker, s.repo).VoteMovie(newCtx, parseID)
 	if err != nil {
-		return ctx.JSON(http.StatusBadRequest, errorx.NewApiError(http.StatusBadRequest, errorx.WithMessage(err.Error())))
+		return ctx.JSON(http.StatusBadRequest, responsex.NewApiError(http.StatusBadRequest, responsex.WithErrorMessage(err.Error())))
 	}
 
-	return ctx.JSON(http.StatusOK, nil)
+	return ctx.JSON(http.StatusOK, responsex.NewApiSuccess(http.StatusOK, responsex.WithSuccessMessage("success")))
 }
