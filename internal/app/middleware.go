@@ -89,6 +89,11 @@ func UserMiddleware(token token.Maker) echo.MiddlewareFunc {
 				return err
 			}
 
+			if err := payload.Valid(); err != nil {
+				ctx.JSON(http.StatusUnauthorized, responsex.NewApiError(http.StatusUnauthorized, responsex.WithErrorMessage(err.Error())))
+				return err
+			}
+
 			// validate scopes
 			err = mustAuthenticatedUser(*payload)
 			if err != nil {

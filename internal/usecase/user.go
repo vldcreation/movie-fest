@@ -2,6 +2,7 @@ package usecase
 
 import (
 	"context"
+	"log"
 	"time"
 
 	"github.com/vldcreation/movie-fest/config"
@@ -66,6 +67,7 @@ func (u *User) Login(ctx context.Context, arg common.UserLogin) (common.LoginRes
 		"user_id": user.ID,
 	}
 
+	log.Printf("access token duration: %v", u.cfg.Token.AccessTokenDuration)
 	accessToken, err := u.tokenMaker.CreateToken(user.Username, u.cfg.Token.AccessTokenDuration, metadata)
 	if err != nil {
 		return res, err
