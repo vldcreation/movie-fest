@@ -95,6 +95,8 @@ func (m *Movie) GetMovies(ctx context.Context, params user.GetMoviesParams) (*us
 			Description: movie.Description.String,
 			Duration:    int(movie.Duration),
 			WatchUrl:    movie.WatchUrl,
+			Votes:       int(movie.VoteCount),
+			Views:       int(movie.ViewCount),
 			CreatedAt:   &movie.CreatedAt.Time,
 			UpdatedAt:   &movie.UpdatedAt.Time,
 		}
