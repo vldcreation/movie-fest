@@ -2,10 +2,13 @@ package usecase
 
 import (
 	"context"
+	"errors"
 	"log"
 	"time"
 
+	"github.com/google/uuid"
 	"github.com/vldcreation/movie-fest/config"
+	"github.com/vldcreation/movie-fest/consts"
 	"github.com/vldcreation/movie-fest/internal/apis/common"
 	"github.com/vldcreation/movie-fest/internal/apis/user"
 	"github.com/vldcreation/movie-fest/internal/repository"
@@ -107,4 +110,23 @@ func (m *Movie) GetMovies(ctx context.Context, params user.GetMoviesParams) (*us
 	response.Total = len(movies)
 	response.TotalPages = (response.Total + int(params.Limit) - 1) / int(params.Limit)
 	return response, nil
+}
+
+func (u *User) VoteMovie(ctx context.Context, id uuid.UUID) error {
+	user, ok := ctx.Value(consts.AuthKey).(*token.Payload)
+	if !ok {
+		return errors.New("user not found")
+	}
+
+	userId, ok := user.GetCustomClaims("user_id")
+	if !ok {
+		return errors.New("userIds not found")
+	}
+
+	parseUserId, err := uuid.Parse(userId.(string))
+	if err != nil {
+		return err
+	}
+
+	return u.repo.VoteMovie(ctx, parseUserId, id)
 }
