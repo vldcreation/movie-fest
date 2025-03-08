@@ -69,6 +69,22 @@ paths:
       responses:
         '200':
           description: Movie voted
+  /movies/{id}/watch:
+    post:
+      tags: [Movies]
+      summary: Watch a movie
+      security:
+        - bearerAuth: ["user"]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: ulid
+      responses:
+        '200':
+          description: Movie watched
 components:
   schemas:
     ErrorResponse:

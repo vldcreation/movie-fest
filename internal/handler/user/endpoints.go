@@ -35,7 +35,7 @@ func (s *Server) PostMoviesIdVote(ctx echo.Context, id string) error {
 		return ctx.JSON(http.StatusBadRequest, responsex.NewApiError(http.StatusBadRequest, responsex.WithErrorMessage("invalid id format")))
 	}
 
-	err = usecase.NewVote(s.cfg, s.tokenMaker, s.repo).VoteMovie(newCtx, parseID)
+	err = usecase.NewUser(s.cfg, s.tokenMaker, s.repo).VoteMovie(newCtx, parseID)
 	if err != nil {
 		return ctx.JSON(http.StatusBadRequest, responsex.NewApiError(http.StatusBadRequest, responsex.WithErrorMessage(err.Error())))
 	}
@@ -54,4 +54,22 @@ func (s *Server) GetMovies(ctx echo.Context, params user.GetMoviesParams) error 
 	}
 
 	return ctx.JSON(http.StatusOK, responsex.NewApiSuccess(http.StatusOK, responsex.WithSuccessMessage("success")).WithData(movies))
+}
+
+func (s *Server) PostMoviesIdWatch(ctx echo.Context, id string) error {
+	newCtx := context.WithValue(ctx.Request().Context(), consts.AuthKey, ctx.Get(consts.AuthKey))
+	newCtx, cancel := context.WithTimeout(newCtx, 30*time.Second)
+	defer cancel()
+
+	parseID, err := uuid.Parse(id)
+	if err != nil {
+		return ctx.JSON(http.StatusBadRequest, responsex.NewApiError(http.StatusBadRequest, responsex.WithErrorMessage("invalid id format")))
+	}
+
+	err = usecase.NewUser(s.cfg, s.tokenMaker, s.repo).TrackMovieView(newCtx, parseID)
+	if err != nil {
+		return ctx.JSON(http.StatusBadRequest, responsex.NewApiError(http.StatusBadRequest, responsex.WithErrorMessage(err.Error())))
+	}
+
+	return ctx.JSON(http.StatusOK, responsex.NewApiSuccess(http.StatusOK, responsex.WithSuccessMessage("success")))
 }

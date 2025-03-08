@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"errors"
 
+	"github.com/google/uuid"
 	db "github.com/vldcreation/movie-fest/db/sqlc"
 	"github.com/vldcreation/movie-fest/internal/apis/common"
 	"github.com/vldcreation/movie-fest/pkg/util"
@@ -14,6 +15,7 @@ import (
 type User interface {
 	Registration(ctx context.Context, arg common.UserRegistration) (db.Users, db.Roles, error)
 	Login(ctx context.Context, arg common.UserLogin) (db.Users, db.Roles, error)
+	TrackMovieView(ctx context.Context, userId uuid.UUID, movieId uuid.UUID) error
 }
 
 func (m *Repository) Registration(ctx context.Context, arg common.UserRegistration) (db.Users, db.Roles, error) {
@@ -96,4 +98,20 @@ func (m *Repository) Login(ctx context.Context, arg common.UserLogin) (db.Users,
 		return result, db.Roles{}, err
 	}
 	return user, role, nil
+}
+
+func (m *Repository) TrackMovieView(ctx context.Context, userId uuid.UUID, movieId uuid.UUID) error {
+	err := m.execTx(ctx, &sql.TxOptions{
+		Isolation: sql.LevelRepeatableRead,
+	}, func(tx *db.Queries) error {
+		err := tx.TrackMovieView(ctx, db.TrackMovieViewParams{
+			UserID:  uuid.NullUUID{UUID: userId, Valid: true},
+			MovieID: movieId,
+		})
+		if err != nil {
+			return err
+		}
+		return nil
+	})
+	return err
 }

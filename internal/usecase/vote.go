@@ -12,8 +12,8 @@ type Vote struct {
 	repo       repository.RepositoryInterface
 }
 
-func NewVote(cfg *config.Config, tokenMaker token.Maker, repo repository.RepositoryInterface) *User {
-	return &User{
+func NewVote(cfg *config.Config, tokenMaker token.Maker, repo repository.RepositoryInterface) *Vote {
+	return &Vote{
 		cfg:        cfg,
 		repo:       repo,
 		tokenMaker: tokenMaker,
