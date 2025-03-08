@@ -292,9 +292,6 @@ func (m *Repository) GetMovies(ctx context.Context, arg user.GetMoviesParams) ([
 		Limit:   arg.Limit,
 		Offset:  offset,
 		Column1: arg.Search,
-		Column2: arg.Search,
-		Column3: arg.Search,
-		Column4: arg.Search,
 	})
 	if err != nil {
 		return nil, err

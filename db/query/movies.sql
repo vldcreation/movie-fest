@@ -2,8 +2,8 @@
 SELECT m.id, m.title, m.description, m.duration, m.watch_url, m.created_at, m.updated_at,
        COALESCE(array_agg(DISTINCT g.name) FILTER (WHERE g.name IS NOT NULL), '{}') AS genres,
        COALESCE(array_agg(DISTINCT a.name) FILTER (WHERE a.name IS NOT NULL), '{}') AS artists,
-       COUNT(v.id) AS view_count,
-       COUNT(vt.user_id) AS vote_count
+       COUNT(DISTINCT v.id) AS view_count,
+       COUNT(DISTINCT vt.user_id) AS vote_count
 FROM movies m
 LEFT JOIN movie_genres mg ON m.id = mg.movie_id
 LEFT JOIN genres g ON mg.genre_id = g.id
@@ -11,14 +11,14 @@ LEFT JOIN movie_artists ma ON m.id = ma.movie_id
 LEFT JOIN artists a ON ma.artist_id = a.id
 LEFT JOIN views v ON m.id = v.movie_id
 LEFT JOIN votes vt ON m.id = vt.movie_id
-WHERE
-    ($1::text = '' OR m.title ILIKE '%' || $1 || '%') AND
-    ($2::text = '' OR m.description ILIKE '%' || $2 || '%') AND
-    ($3::text = '' OR g.name ILIKE '%' || $3 || '%') AND
-    ($4::text = '' OR a.name ILIKE '%' || $4 || '%')
+WHERE ($1::text = '' OR 
+       m.title ILIKE '%' || $1 || '%' OR 
+       m.description ILIKE '%' || $1 || '%' OR 
+       g.name ILIKE '%' || $1 || '%' OR
+       a.name ILIKE '%' || $1 || '%')
 GROUP BY m.id
 ORDER BY m.created_at DESC
-LIMIT $5 OFFSET $6;
+LIMIT $2 OFFSET $3;
 
 -- name: GetMovieByID :one
 SELECT m.*, 
