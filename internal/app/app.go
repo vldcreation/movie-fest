@@ -5,6 +5,7 @@ import (
 	"github.com/vldcreation/movie-fest/internal/apis/admin"
 	"github.com/vldcreation/movie-fest/internal/apis/common"
 	"github.com/vldcreation/movie-fest/internal/apis/user"
+	"github.com/vldcreation/movie-fest/internal/handler"
 	adminHandler "github.com/vldcreation/movie-fest/internal/handler/admin"
 	commonHandler "github.com/vldcreation/movie-fest/internal/handler/common"
 	userHandler "github.com/vldcreation/movie-fest/internal/handler/user"
@@ -47,6 +48,7 @@ func (app *App) Run() {
 	user.RegisterHandlers(userGroup, userServer)
 	common.RegisterHandlers(commonGroup, commonServer)
 	e.Use(middleware.Logger())
+	handler.RegisterSwagger(e)
 	e.Logger.Fatal(e.Start(":" + app.cfg.APP.Port))
 }
 
