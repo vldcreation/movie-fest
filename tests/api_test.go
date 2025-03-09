@@ -63,6 +63,8 @@ func getTestCases() []TestCase {
 				},
 			},
 		},
+		CreateNormalTestCase("Test Auth Register", []any{AuthRegister, "user1@example.com", "user1", "user1@123"}),
+		CreateNormalTestCase("Test Auth Login", []any{AuthLogin, "user1@example.com", "user1@123"}),
 	}
 }
 
@@ -99,6 +101,13 @@ func RequireIsUUID(t *testing.T, value string) {
 	require.NoError(t, err)
 }
 
+func RequireIsValidToken(t *testing.T, testsuite *TestSuite, value string) {
+	payload, err := testsuite.TokenMaker.VerifyToken(value)
+	require.NoError(t, err)
+	require.NotEmpty(t, payload)
+	require.NoError(t, payload.Valid())
+}
+
 const (
 	AuthRegister = iota
 	AuthLogin
@@ -108,15 +117,18 @@ func CreateNormalTestCase(name string, a []any) TestCase {
 	tc := TestCase{}
 	tc.Name = name
 
-	for _, step := range a {
-		switch step.([]any)[0].(int) {
-		case AuthRegister:
-			tc.Steps = append(tc.Steps, TestCaseStep{
-				Request: SendRequestRegister(step.([]any)[1].(string), step.([]any)[2].(string), step.([]any)[3].(string)),
-				Expect:  ExpectRegisterOk(),
-			})
+	switch a[0].(int) {
+	case AuthRegister:
+		tc.Steps = append(tc.Steps, TestCaseStep{
+			Request: SendRequestRegister(a[1].(string), a[2].(string), a[3].(string)),
+			Expect:  ExpectRegisterOk(),
+		})
+	case AuthLogin:
+		tc.Steps = append(tc.Steps, TestCaseStep{
+			Request: SendRequestLogin(a[1].(string), a[2].(string)),
+			Expect:  ExpectLoginOk(),
+		})
 
-		}
 	}
 	return tc
 }
@@ -136,8 +148,27 @@ func SendRequestRegister(email string, username string, password string) Request
 
 func ExpectRegisterOk() ExpectFunc {
 	return func(t *testing.T, ctx context.Context, tc *TestCase, resp *http.Response, data map[string]any) {
-		require.Equal(t, http.StatusOK, resp.StatusCode)
+		require.Equal(t, http.StatusCreated, resp.StatusCode)
 		RequireIsUUID(t, data["id"].(string))
+	}
+}
+
+func SendRequestLogin(email string, password string) RequestFunc {
+	return func(t *testing.T, ctx context.Context, tc *TestCase) (*http.Request, error) {
+		body := map[string]any{
+			"email":    email,
+			"password": password,
+		}
+		jsonBody, err := json.Marshal(body)
+		require.NoError(t, err)
+		return http.NewRequest("POST", ApiUrl+"/auth/login", bytes.NewBuffer(jsonBody))
+	}
+}
+
+func ExpectLoginOk() ExpectFunc {
+	return func(t *testing.T, ctx context.Context, tc *TestCase, resp *http.Response, data map[string]any) {
+		require.Equal(t, http.StatusOK, resp.StatusCode)
+		RequireIsValidToken(t, NewTestSuite(), data["token"].(string))
 	}
 }
 
@@ -155,5 +186,13 @@ func RequireReturnIsUUIDCreated(t *testing.T, resp *http.Response, data map[stri
 func ExpectBadRequest() ExpectFunc {
 	return func(t *testing.T, ctx context.Context, tc *TestCase, resp *http.Response, data map[string]any) {
 		require.Equal(t, http.StatusBadRequest, resp.StatusCode)
+	}
+}
+
+func ExpectTokenValid(suite *TestSuite) ExpectFunc {
+	return func(t *testing.T, ctx context.Context, tc *TestCase, resp *http.Response, data map[string]any) {
+		require.Equal(t, http.StatusOK, resp.StatusCode)
+		token := data["token"].(string)
+		RequireIsValidToken(t, suite, token)
 	}
 }
